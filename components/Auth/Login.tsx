@@ -15,8 +15,22 @@ import { useState } from "react";
 import { ErrorAlert } from "../ErrorAlert";
 import { RestorePasswordModal } from "./RestorePasswordModal";
 import { axiosPost } from "../../utils/axios-functions";
+import { APIPath, StorageKey } from "../../utils/storage-keys";
+import { storeData } from "../../utils/async-storage-functions";
+
+import { connect, useDispatch, useSelector } from 'react-redux';
+import { loginUser } from "../../redux/actions/authActions";
+import { store } from "../../redux/store";
 
 export const Login = () => {
+
+  const {isAuthenticated, user} = useSelector((app: any)=> app.auth);
+  console.log("user:");
+  console.log(user);
+
+
+  //const dispatch = useDispatch();
+
   const [passShow, setPassShow] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,17 +41,17 @@ export const Login = () => {
 
   const [emailModalVisible, setEmailModalVisible] = useState(false);
 
-  const loginUser = () => {
-    axiosPost(
-      "auth",
-      {
-        email: email,
-        password: password,
-      },
-      (text) => console.log("Error: " + text),
-      (text) => console.log(text)
-    );
-  };
+  // const loginUser = () => {
+  //   axiosPost(
+  //     APIPath.auth,
+  //     (text) => console.log("Error: " + text),
+  //     (value) => storeData(StorageKey.token, value.remember_token),
+  //     {
+  //       email: email,
+  //       password: password,
+  //     }
+  //   );
+  // };
 
   return (
     <Box flex={1} alignItems="center" justifyContent="center">
@@ -99,7 +113,7 @@ export const Login = () => {
               onClose={() => setIsError(false)}
             />
           )}
-          <Checkbox
+          {/* <Checkbox
             onChange={(isSelected: boolean) => setIsRemember(isSelected)}
             shadow={2}
             value="remember"
@@ -110,13 +124,13 @@ export const Login = () => {
             <Text ml="3" color={theme.colors.muted[400]}>
               Remember
             </Text>
-          </Checkbox>
+          </Checkbox> */}
           <Button
             leftIcon={<Icon as={MaterialIcons} name="people" size="sm" />}
             shadow={2}
             bgColor={theme.colors.blue[500]}
             onPress={() => {
-              loginUser();
+              store.dispatch(loginUser(email, password));
             }}
           >
             Login

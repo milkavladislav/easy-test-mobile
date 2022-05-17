@@ -54,18 +54,18 @@ export const RestorePasswordModal = ({
       .catch((err) => console.log("Error: " + err));
   };
 
-  const getUrlCaptcha = () => {
-    axios
-      .get("http://easy-test.asyx.ru/refresh-captcha")
-      .then((res) => {
-        setCaptcha(res.data.captcha);
-      })
-      .catch((err) => console.log(err));
-  };
+  // const getUrlCaptcha = () => {
+  //   axios
+  //     .get("http://easy-test.asyx.ru/refresh-captcha")
+  //     .then((res) => {
+  //       setCaptcha(res.data.captcha);
+  //     })
+  //     .catch((err) => console.log(err));
+  // };
 
-  useEffect(() => {
-    getUrlCaptcha();
-  }, []);
+  // useEffect(() => {
+  //   getUrlCaptcha();
+  // }, []);
 
   return (
     <Modal
@@ -97,7 +97,7 @@ export const RestorePasswordModal = ({
               }
               placeholder="E-mail"
             />
-            <Stack mt={"2"} justifyContent={"space-evenly"} direction={"row"}>
+            {/* <Stack mt={"2"} justifyContent={"space-evenly"} direction={"row"}>
               <Image
                 source={{
                   uri: captcha,
@@ -120,7 +120,7 @@ export const RestorePasswordModal = ({
                   size: "xl",
                 }}
               />
-            </Stack>
+            </Stack> */}
             <Input
               onChangeText={(text: string) => setCaptchaText(text)}
               value={captchaText}

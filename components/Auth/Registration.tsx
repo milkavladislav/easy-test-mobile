@@ -11,13 +11,16 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Slide,
-  Alert
+  Alert,
+  Toast
 } from "native-base";
 import axios from "axios";
 import { Image } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { ErrorAlert } from "../ErrorAlert";
+import { axiosPost } from "../../utils/axios-functions";
+import { APIPath } from "../../utils/storage-keys";
 
 export const Registration = () => {
   const [passShow, setPassShow] = useState(false);
@@ -38,43 +41,42 @@ export const Registration = () => {
   const [isOpenTop, setIsOpenTop] = useState(false);
 
   const registerUser = () => {
-    axios
-      .post('http://easy-test.asyx.ru/app/registration', {
-          "email": email,
-          "name": name,
-          "password": password,
-          "captcha": captchaText
-      })
-      .then((res) => {
-        const data = res.data;
-        const isError = "error" in data;
-
-        console.log(data)
-        if (isError) {
-          setIsError(true);
-          setTextError(data.error);
-          getUrlCaptcha()
-        }
-        else{
-          setIsOpenTop(true)
-        }
-      })
-      .catch((err) =>
-      console.log("Error: " + err)
-      );
+    axiosPost(
+      APIPath.registration,
+      (error) => {
+        setIsError(true);
+        setTextError(error);
+        console.log("error")
+        console.log(error);
+        // getUrlCaptcha(true);
+      },
+      (text) =>{
+        console.log(text);
+      },
+      {
+        email: email,
+        name: name,
+        password: password,
+      },
+    );
   };
 
-  const getUrlCaptcha = () => {
-    axios
-      .get("http://easy-test.asyx.ru/refresh-captcha")
-      .then((res) => {
-        setCaptcha(res.data.captcha);
-      })
-      .catch((err) => console.log(err));
-  };
+  // const getUrlCaptcha = (isMounted: boolean) => {
+  //   axios
+  //     .get(APIPath.root + APIPath.refreshCaptcha)
+  //     .then((res) => {
+  //       console.log(res.data.captcha);
+  //       if (isMounted) setCaptcha(res.data.captcha);
+  //     })
+  //     .catch((err) => console.log(err));
+  // };
 
   useEffect(() => {
-    getUrlCaptcha()
+    let isMounted = true;
+    //getUrlCaptcha(isMounted);
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
@@ -180,7 +182,7 @@ export const Registration = () => {
         }
         placeholder="Password confirm"
       />
-      <Stack direction={"row"}>
+      {/* <Stack direction={"row"}>
         <Image
           source={{
             uri: captcha,
@@ -194,7 +196,7 @@ export const Registration = () => {
         <IconButton
           icon={<Icon as={MaterialIcons} name="rotate-right" />}
           borderRadius="full"
-          onPress={getUrlCaptcha}
+          onPress={() => getUrlCaptcha(true)}
           _pressed={{
             bg: theme.colors.blue[300],
           }}
@@ -221,30 +223,28 @@ export const Registration = () => {
           />
         }
         placeholder="Captcha"
-      />
+      /> */}
       {isError ? (
-            <ErrorAlert
-              errorMessage={textError}
-              onClose={() => setIsError(false)}
-            />
-      ): (
+        <ErrorAlert
+          errorMessage={textError}
+          onClose={() => setIsError(false)}
+        />
+      ) : (
         <Slide in={isOpenTop} duration={500} placement="top">
-             <Alert justifyContent="center" status="error">
-               <Alert.Icon />
-               <Text color="error.600" fontWeight="medium">
-                 No Internet Connection
-               </Text>
-             </Alert>
-           </Slide>
+          <Alert justifyContent="center" status="error">
+            <Alert.Icon />
+            <Text color="error.600" fontWeight="medium">
+              No Internet Connection
+            </Text>
+          </Alert>
+        </Slide>
       )}
-          
+
       <Button
         leftIcon={<Icon as={MaterialIcons} name="account-circle" size="sm" />}
         shadow={2}
         bgColor={theme.colors.blue[500]}
-        onPress={() =>
-          registerUser()
-        }
+        onPress={() => registerUser()}
       >
         Register
       </Button>
