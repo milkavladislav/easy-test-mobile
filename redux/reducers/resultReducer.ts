@@ -3,7 +3,7 @@ import { GET_RESULTS, SET_ALL_ABOUT, SET_CURRENT_USER, SET_RESULT } from "../typ
 
 const initialState = {
   results: [],
-  testsAbout: [],
+  testsAbout: []
 };
 
 export default function resultReducer(state = initialState, action: any) {

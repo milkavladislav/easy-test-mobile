@@ -17,7 +17,6 @@ export const MainTesting = () => {
   });
 
   const { isTestNow, currentTestAbout, currentTestQuestions } = useSelector((app: any) => {
-    console.log(app);
     return app.test;
   });
 

@@ -17,6 +17,7 @@ export const ADD_TEST = 'ADD_TEST';
 export const GET_TEST = 'GET_TEST';
 export const DELETE_TEST = 'DELETE_TEST';
 export const MARK_TEST = 'MARK_TEST';
+export const UPDATE_TEST_PROGRESS_LOCAL = 'UPDATE_TEST_PROGRESS_LOCAL';
 
 export const CONNECT_TO_TEST = 'CONNECT_TO_TEST';
 export const SET_ABOUT = 'SET_ABOUT';

@@ -20,20 +20,20 @@ export const getResult =
         });
       },
       (value: []) => {
-        dispatch(getAboutTest())
+        value.forEach((result: {activate_id: number}) => {
+          dispatch(getAboutTest(result.activate_id))
+        })
         dispatch({
           type: SET_RESULT,
           payload: value,
         })
-        //console.log(value)
-        //dispatch(getAboutUser());
       },
       {}
     );
   };
 
   export const getAboutTest =
-  () => (dispatch: any) => {
+  (id: number) => (dispatch: any) => {
     axiosPost(
       APIPath.test,
       (error) => {
@@ -49,7 +49,9 @@ export const getResult =
           payload: value,
         });
       },
-      {}
+      {
+        id: id
+      }
     );
   };
 
