@@ -1,54 +1,28 @@
 import React, { useEffect, useState } from "react";
-import {
-  theme,
-  Icon,
-  Button,
-  Input,
-  Modal,
-  FormControl,
-} from "native-base";
+import { theme, Icon, Button, Input, Modal, FormControl } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import axios from "axios";
 import { ErrorAlert } from "../ErrorAlert";
+import { store } from "../../redux/store";
+import { changeName } from "../../redux/actions/authActions";
 
 export interface ChangeNameModalProps {
   isOpen: boolean;
   oldName: string;
   onClose: () => void;
+  onSuccess: () => void;
 }
 
 export const ChangeNameModal = ({
   isOpen,
   oldName,
   onClose,
+  onSuccess,
 }: ChangeNameModalProps) => {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(oldName);
 
   const [isError, setIsError] = useState(false);
   const [textError, setTextError] = useState("");
-
-  const restorePassword = () => {
-    axios
-      .post('http://easy-test.asyx.ru/app/changeName', {
-          "name": name,
-      })
-      .then((res) => {
-        const data = res.data;
-        const isError = "error" in data;
-        console.log(data)
-
-        if (isError) {
-          setIsError(true);
-          setTextError(data.error);
-
-        }else{
-          onClose()
-        }
-      })
-      .catch((err) =>
-      console.log("Error: " + err)
-      );
-  };
 
   return (
     <Modal
@@ -78,14 +52,14 @@ export const ChangeNameModal = ({
                   color="muted.400"
                 />
               }
-              placeholder="E-mail"
+              placeholder="name"
             />
-       {isError && (
-            <ErrorAlert
-              errorMessage={textError}
-              onClose={() => setIsError(false)}
-            />
-          )}
+            {isError && (
+              <ErrorAlert
+                errorMessage={textError}
+                onClose={() => setIsError(false)}
+              />
+            )}
           </FormControl>
         </Modal.Body>
         <Modal.Footer>
@@ -94,7 +68,10 @@ export const ChangeNameModal = ({
             shadow={2}
             bgColor={theme.colors.blue[500]}
             flex="1"
-            onPress={restorePassword}
+            onPress={() => {
+              store.dispatch(changeName(name, onSuccess));
+              onClose();
+            }}
           >
             Save
           </Button>

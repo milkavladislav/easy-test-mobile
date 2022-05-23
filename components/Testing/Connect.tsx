@@ -10,6 +10,7 @@ import {
   AlertDialog,
   IconButton,
   Input,
+  useToast,
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRef, useState } from "react";
@@ -25,6 +26,8 @@ export const Connect = () => {
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const [code, setCode] = useState("");
+
+  const toast = useToast();
 
   return (
     <Box flex={1} alignItems="center" justifyContent="space-around">
@@ -53,7 +56,10 @@ export const Connect = () => {
           bgColor={theme.colors.blue[500]}
           onPress={() => {
             console.log("Start " + code);
-            store.dispatch(connectToTest(code));
+            store.dispatch(connectToTest(code, (error: string) =>
+            toast.show({
+              description: error,
+            })));
           }}
         >
           Start

@@ -1,4 +1,4 @@
-import { Box, theme } from "native-base";
+import { Box, Skeleton, theme } from "native-base";
 import { useRef, useState } from "react";
 import { View, useWindowDimensions } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
@@ -7,6 +7,8 @@ import { TestScene } from "../../utils/enums";
 import { Connect } from "./Connect";
 import { MyTests } from "./MyTests";
 import { Test } from "./Test";
+import { TestResult } from "./TestResult";
+import { TestSetting } from "./TestSettings";
 
 export const MainTesting = () => {
   const layout = useWindowDimensions();
@@ -16,7 +18,14 @@ export const MainTesting = () => {
     mytests: MyTests,
   });
 
-  const { isTestNow, currentTestAbout, currentTestQuestions } = useSelector((app: any) => {
+  const {
+    isTestNow,
+    isLoading,
+    isResultNow,
+    isShowSomeTest,
+    currentTestAbout,
+    currentTestQuestions,
+  } = useSelector((app: any) => {
     return app.test;
   });
 
@@ -26,26 +35,32 @@ export const MainTesting = () => {
     { key: "mytests", title: "My testings" },
   ]);
 
-  const [stage, setStage] = useState(TestScene.connect);
-
   return (
     <Box flex={1} alignItems="center">
-      {isTestNow ? <Test/> : (<Box width="90%" height="90%" maxWidth="100%">
-        <TabView
-          renderTabBar={(props) => (
-            <TabBar
-              {...props}
-              indicatorStyle={{ backgroundColor: theme.colors.blue[300] }}
-              style={{ backgroundColor: "white", }}
-              labelStyle={{ color: theme.colors.blue[300] }}
-            />
-          )}
-          navigationState={{ index, routes }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          initialLayout={{ width: layout.width }}
-        />
-      </Box>)}
+      {isTestNow ? (
+        <Test />
+      ) : isResultNow ? (
+        <TestResult />
+      ) : isShowSomeTest ? (
+        <TestSetting />
+      ) : (
+        <Box width="90%" height="90%" maxWidth="100%">
+          <TabView
+            renderTabBar={(props) => (
+              <TabBar
+                {...props}
+                indicatorStyle={{ backgroundColor: theme.colors.blue[300] }}
+                style={{ backgroundColor: "white" }}
+                labelStyle={{ color: theme.colors.blue[300] }}
+              />
+            )}
+            navigationState={{ index, routes }}
+            renderScene={renderScene}
+            onIndexChange={setIndex}
+            initialLayout={{ width: layout.width }}
+          />
+        </Box>
+      )}
     </Box>
   );
 };

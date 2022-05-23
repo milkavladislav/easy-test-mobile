@@ -12,42 +12,45 @@ import {
   HStack,
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { connect, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/actions/authActions";
 import { store } from "../../redux/store";
+import { Linking } from "react-native";
+import { getMyTest, getMyTests } from "../../redux/actions/testActions";
 
 export const MyTests = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const onClose = () => setIsOpen(false);
+  useEffect(() => {
+    store.dispatch(getMyTests());
+    return () => {};
+  }, []);
+
+  const { myTests } = useSelector((app: any) => {
+    return app.test;
+  });
+
+  // console.log(myTests);
+  
 
   return (
     <Box flex={1} alignItems="center">
       <Stack space={4} mt={10} alignItems="center">
-        <Button
-          leftIcon={<Icon as={MaterialIcons} name="add" size="sm" />}
-          shadow={2}
-          bgColor={theme.colors.blue[500]}
-          onPress={() => {
-            console.log("Create test");
-          }}
-        >
-          New test
-        </Button>
-        <Button
-          width="lg"
-          style={{}}
-          shadow={2}
-          bgColor={theme.colors.blueGray["100"]}
-          onPress={() => {
-            console.log("Create test");
-          }}
-        >
-          <HStack justifyContent="space-between" width="xs">
-            <Text>Math</Text>
-            <Text color={theme.colors.blue[500]}>2022-05-15 17:56:22</Text>
-          </HStack>
-        </Button>
+        {myTests?.map(
+          (test: { title: string; id: number; description: string }) => (
+            <Button
+              width="full"
+              shadow={2}
+              key={test.id}
+              bgColor={theme.colors.blueGray["100"]}
+              onPress={() => {
+                store.dispatch(getMyTest(test))
+              }}
+            >
+                <Text textAlign={'left'} w="xs">{test.title}</Text>
+                <Text color={theme.colors.blue[500]}>{test.description}</Text>
+            </Button>
+          )
+        )}
       </Stack>
     </Box>
   );

@@ -33,40 +33,6 @@ export const RestorePasswordModal = ({
   const [isError, setIsError] = useState(false);
   const [textError, setTextError] = useState("");
 
-  const restorePassword = () => {
-    axios
-      .post("http://easy-test.asyx.ru/app/restore", {
-        email: email,
-        captcha: captchaText,
-      })
-      .then((res) => {
-        const data = res.data;
-        const isError = "error" in data;
-        console.log(data);
-
-        if (isError) {
-          setIsError(true);
-          setTextError(data.error);
-        } else {
-          onClose();
-        }
-      })
-      .catch((err) => console.log("Error: " + err));
-  };
-
-  // const getUrlCaptcha = () => {
-  //   axios
-  //     .get("http://easy-test.asyx.ru/refresh-captcha")
-  //     .then((res) => {
-  //       setCaptcha(res.data.captcha);
-  //     })
-  //     .catch((err) => console.log(err));
-  // };
-
-  // useEffect(() => {
-  //   getUrlCaptcha();
-  // }, []);
-
   return (
     <Modal
       isOpen={isOpen}
@@ -97,44 +63,6 @@ export const RestorePasswordModal = ({
               }
               placeholder="E-mail"
             />
-            {/* <Stack mt={"2"} justifyContent={"space-evenly"} direction={"row"}>
-              <Image
-                source={{
-                  uri: captcha,
-                }}
-                style={{
-                  resizeMode: "cover",
-                  height: 55,
-                  width: 200,
-                }}
-              />
-              <IconButton
-                icon={<Icon as={MaterialIcons} name="rotate-right" />}
-                borderRadius="full"
-                onPress={getUrlCaptcha}
-                _pressed={{
-                  bg: theme.colors.blue[300],
-                }}
-                _icon={{
-                  color: theme.colors.blue[500],
-                  size: "xl",
-                }}
-              />
-            </Stack> */}
-            <Input
-              onChangeText={(text: string) => setCaptchaText(text)}
-              value={captchaText}
-              variant="rounded"
-              InputLeftElement={
-                <Icon
-                  as={<MaterialIcons name="edit" />}
-                  size={5}
-                  ml="2"
-                  color="muted.400"
-                />
-              }
-              placeholder="Captcha"
-            />
             {isError && (
               <ErrorAlert
                 errorMessage={textError}
@@ -149,7 +77,9 @@ export const RestorePasswordModal = ({
             shadow={2}
             bgColor={theme.colors.blue[500]}
             flex="1"
-            onPress={restorePassword}
+            onPress={() => {
+              console.log("forgot password: ", email);
+            }}
           >
             Send email
           </Button>

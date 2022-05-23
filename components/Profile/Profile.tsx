@@ -8,20 +8,27 @@ import {
   Image,
   Pressable,
   AlertDialog,
-  IconButton,
+  useToast,
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRef, useState } from "react";
 import { connect, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/actions/authActions";
 import { store } from "../../redux/store";
+import { ChangeNameModal } from "./ChangeNameModal";
+import { ChangePasswordModal } from "./ChangPasswordModal";
 
 export const Profile = () => {
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef(null);
 
-  const { isAuthenticated, user } = useSelector((app: any) => app.auth);
+  const toast = useToast();
+
+  const [isNameModalOpen, setNameModal] = useState(false);
+  const [isPasswordModalOpen, setPasswordModal] = useState(false);
+
+  const { user } = useSelector((app: any) => app.auth);
 
   console.log("loginuser");
   console.log(user);
@@ -59,15 +66,6 @@ export const Profile = () => {
               alt="Avatar"
             />
           </Pressable>
-          {/* <IconButton
-            position={"absolute"}
-            top="150"
-            right="5"
-            icon={<Icon as={MaterialIcons} name="edit" size={"sm"} />}
-            onPress={() => console.log("edit photo")}
-            backgroundColor={"blue.500"}
-            borderRadius="full"
-          /> */}
         </Box>
         <Text fontSize={"2xl"} bold>
           {user.name}
@@ -82,7 +80,7 @@ export const Profile = () => {
           shadow={2}
           bgColor={theme.colors.blue[500]}
           onPress={() => {
-            console.log("Change name");
+            setNameModal(true);
           }}
         >
           Change name
@@ -92,22 +90,40 @@ export const Profile = () => {
           shadow={2}
           bgColor={theme.colors.blue[500]}
           onPress={() => {
-            console.log("Change password");
+            setPasswordModal(true)
           }}
         >
           Change password
         </Button>
         <Button
-          leftIcon={<Icon as={MaterialIcons} name="edit" size="sm" />}
           shadow={2}
           bgColor={theme.colors.red[500]}
           onPress={() => {
-            store.dispatch(logoutUser())
+            store.dispatch(logoutUser());
           }}
         >
           Logout
         </Button>
       </Stack>
+      <ChangeNameModal
+        isOpen={isNameModalOpen}
+        oldName={user.name}
+        onClose={() => setNameModal(false)}
+        onSuccess={() =>
+          toast.show({
+            description: "Name was changed",
+          })
+        }
+      />
+      <ChangePasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setPasswordModal(false)}
+        onSuccess={() =>
+          toast.show({
+            description: "Password was changed",
+          })
+        }
+      />
     </Box>
   );
 };

@@ -1,11 +1,11 @@
-import { clearData } from './../../utils/async-storage-functions';
+import { CHANGE_NAME } from "./../types";
+import { clearData } from "./../../utils/async-storage-functions";
 import axios from "axios";
 import { storeData } from "../../utils/async-storage-functions";
 import { axiosGet, axiosPost } from "../../utils/axios-functions";
 import { APIPath, StorageKey } from "../../utils/storage-keys";
 
 import { GET_ERRORS, SET_CURRENT_USER } from "../types";
-
 
 // Login - Get User Token
 export const loginUser =
@@ -29,26 +29,64 @@ export const loginUser =
     );
   };
 
-// get information about user
-  export const getAboutUser = () => (dispatch: any) => {
+export const registerUser =
+  (email: string, name: string, password: string, onSuccess: () => void) => (dispatch: any) => {
     axiosPost(
-      APIPath.user,
+      APIPath.registration,
       (error) => {
-        console.log("Error: " + error);
-        dispatch({
-          type: GET_ERRORS,
-          payload: error,
-        });
+        console.log("error");
+        console.log(error);
       },
-      (value) => {
-        console.log("getAboutUser")
-        console.log(value)
-        storeData(StorageKey.user, value);
-        dispatch(setCurrentUser(value));
+      (text) => {
+        onSuccess();
+        console.log(text);
       },
-      {}
+      {
+        email: email,
+        name: name,
+        password: password,
+      }
     );
   };
+
+  // export const restorePassword =
+  // (email: string, onSuccess: () => void) => (dispatch: any) => {
+  //   axiosPost(
+  //     APIPath.,
+  //     (error) => {
+  //       console.log("error");
+  //       console.log(error);
+  //     },
+  //     (text) => {
+  //       onSuccess();
+  //       console.log(text);
+  //     },
+  //     {
+  //       email: email,
+  //       name: name,
+  //       password: password,
+  //     }
+  //   );
+  // };
+
+// get information about user
+export const getAboutUser = () => (dispatch: any) => {
+  axiosPost(
+    APIPath.user,
+    (error) => {
+      console.log("Error: " + error);
+      dispatch({
+        type: GET_ERRORS,
+        payload: error,
+      });
+    },
+    (value) => {
+      storeData(StorageKey.user, value);
+      dispatch(setCurrentUser(value));
+    },
+    {}
+  );
+};
 
 // Set logged in user
 export const setCurrentUser = (user: any) => {
@@ -58,22 +96,63 @@ export const setCurrentUser = (user: any) => {
   };
 };
 
+export const changeName =
+  (newName: string, onSuccess: () => void) => (dispatch: any) => {
+    console.log("act");
+    axiosPost(
+      APIPath.setName,
+      (error) => {
+        console.log("error");
+        console.log(error);
+      },
+      () => {
+        dispatch(getAboutUser());
+        onSuccess();
+      },
+      {
+        name: newName,
+      }
+    );
+  };
+
+export const changePassword =
+  (oldPassword: string, newPassword: string, onSuccess: () => void, onError: (error: string) => void) =>
+  (dispatch: any) => {
+    axiosPost(
+      APIPath.changePassword,
+      (error) => {
+        console.log("error");
+        console.log(error);
+        onError(error)
+      },
+      (value) => {
+        console.log(value);
+        onSuccess();
+      },
+      {
+        oldPassword: oldPassword,
+        password: newPassword,
+      }
+    );
+  };
+
 // Log user out
 export const logoutUser = () => (dispatch: any) => {
   // Remove token from localStorage
   //localStorage.removeItem("jwtToken");
 
-  axiosGet(APIPath.logout,
-  (error) => {
-    console.log("error")
-    console.log(error)
-  },
-  (data) => {
-    console.log(data)
-  })
+  axiosPost(
+    APIPath.logout,
+    (error) => {
+      console.log("error");
+      console.log(error);
+    },
+    (data) => {
+      console.log(data);
+    }
+  );
 
-
-  console.log("logout")
-  clearData(StorageKey.user)
+  console.log("logout");
+  clearData(StorageKey.user);
   dispatch(setCurrentUser(null));
 };

@@ -135,7 +135,7 @@ export const Login = () => {
           >
             Login
           </Button>
-          <Pressable onPress={() => setEmailModalVisible(true)}>
+          {/* <Pressable onPress={() => setEmailModalVisible(true)}>
             <Text underline>Forgot password</Text>
           </Pressable>
           <RestorePasswordModal
@@ -143,7 +143,7 @@ export const Login = () => {
             onClose={() => {
               setEmailModalVisible(false);
             }}
-          />
+          /> */}
         </Stack>
       </Box>
     </Box>

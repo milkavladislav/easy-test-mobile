@@ -17,13 +17,18 @@ import { Auth } from "./Auth/Auth";
 import { APIPath, StorageKey } from "../utils/storage-keys";
 import { getData } from "../utils/async-storage-functions";
 import { store } from "../redux/store";
-import { logoutUser, setCurrentUser } from "../redux/actions/authActions";
+import {
+  getAboutUser,
+  logoutUser,
+  setCurrentUser,
+} from "../redux/actions/authActions";
 import { axiosGet } from "../utils/axios-functions";
 import { Profile } from "./Profile/Profile";
 import { Result } from "./Result/Result";
 import { MainTesting } from "./Testing/MainTesting";
 import { MenuItems } from "../utils/enums";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { CLEAR_ALL } from "../redux/types";
 
 export default () => {
   const [loading, setLoading] = useState(true);
@@ -45,22 +50,11 @@ export default () => {
 
   useEffect(() => {
     checkIsAuth();
-    axiosGet(
-      APIPath.user,
-      (error) => {
-        console.log(error);
-      },
-      (data) => {
-        store.dispatch(setCurrentUser(data));
-      }
-    );
+    store.dispatch(getAboutUser());
     return () => {};
   }, []);
 
   const { isAuthenticated, user } = useSelector((app: any) => app.auth);
-  console.log(isAuthenticated);
-  console.log("user: ");
-  console.log(user);
 
   return (
     <SafeAreaProvider>
@@ -136,6 +130,9 @@ export default () => {
                 borderRadius="full"
                 onPress={() => {
                   setStage(MenuItems.test);
+                  store.dispatch({
+                    type: CLEAR_ALL,
+                  });
                   onToggle();
                 }}
                 icon={
@@ -174,7 +171,7 @@ export default () => {
               />
             </Stagger>
           </Box>
-          <HStack style={{ top: 0, backgroundColor: "#C2F1F4"}} pt={8} pb={2}>
+          <HStack style={{ top: 0, backgroundColor: "#C2F1F4" }} pt={8} pb={2}>
             <IconButton
               left={3}
               zIndex={10}
@@ -199,16 +196,12 @@ export default () => {
               EasyTest
             </Heading>
           </HStack>
-          {/* {
-        stage === MenuItems.profile ? <Profile/> : stage === MenuItems.test ? <MainTesting/> : <Box/>
-      } */}
-
           {stage === MenuItems.profile ? (
             <Profile />
           ) : stage === MenuItems.test ? (
             <MainTesting />
           ) : stage === MenuItems.result ? (
-            <Result/>
+            <Result goToTest={() => setStage(MenuItems.test)} />
           ) : (
             <Box />
           )}

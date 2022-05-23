@@ -1,5 +1,5 @@
 import isEmpty from '../validation/is-empty';
-import { GET_RESULTS, SET_CURRENT_USER } from '../types';
+import { CHANGE_NAME,  SET_CURRENT_USER } from '../types';
 
 const initialState = {
   isAuthenticated: false,

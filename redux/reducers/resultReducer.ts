@@ -1,9 +1,16 @@
 import isEmpty from "../validation/is-empty";
-import { GET_RESULTS, SET_ALL_ABOUT, SET_CURRENT_USER, SET_RESULT } from "../types";
+import {
+  ACTIVITY_ID_TEST_ID,
+  CONTINUE_TEST,
+  SET_ALL_ABOUT,
+  SET_CURRENT_USER,
+  SET_RESULT,
+} from "../types";
 
 const initialState = {
   results: [],
-  testsAbout: []
+  testsAbout: [],
+  activityIdTestId: [], // )))
 };
 
 export default function resultReducer(state = initialState, action: any) {
@@ -18,11 +25,21 @@ export default function resultReducer(state = initialState, action: any) {
       let testsAbout: any[] = [...state.testsAbout];
       testsAbout.push({
         id: test.id,
-        title: test.title
+        title: test.title,
       });
+      let whiteTestsAbout = Array.from(new Set(testsAbout));
       return {
         ...state,
-        testsAbout: testsAbout
+        testsAbout: whiteTestsAbout,
+      };
+
+    case ACTIVITY_ID_TEST_ID:
+      let value = action.payload;
+      let table: any[] = [...state.activityIdTestId];
+      table.push(value);
+      return {
+        ...state,
+        activityIdTestId: table,
       };
     default:
       return state;

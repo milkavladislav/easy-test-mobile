@@ -12,17 +12,24 @@ import {
   KeyboardAvoidingView,
   Slide,
   Alert,
-  Toast
+  Toast,
+  useToast,
+  Modal,
+  Heading,
 } from "native-base";
 import axios from "axios";
-import { Image } from "react-native";
+import { Image, Linking } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { ErrorAlert } from "../ErrorAlert";
 import { axiosPost } from "../../utils/axios-functions";
 import { APIPath } from "../../utils/storage-keys";
+import { store } from "../../redux/store";
+import { registerUser } from "../../redux/actions/authActions";
 
 export const Registration = () => {
+  const toast = useToast();
+
   const [passShow, setPassShow] = useState(false);
   const [confPassShow, setConfPassShow] = useState(false);
 
@@ -40,44 +47,7 @@ export const Registration = () => {
 
   const [isOpenTop, setIsOpenTop] = useState(false);
 
-  const registerUser = () => {
-    axiosPost(
-      APIPath.registration,
-      (error) => {
-        setIsError(true);
-        setTextError(error);
-        console.log("error")
-        console.log(error);
-        // getUrlCaptcha(true);
-      },
-      (text) =>{
-        console.log(text);
-      },
-      {
-        email: email,
-        name: name,
-        password: password,
-      },
-    );
-  };
-
-  // const getUrlCaptcha = (isMounted: boolean) => {
-  //   axios
-  //     .get(APIPath.root + APIPath.refreshCaptcha)
-  //     .then((res) => {
-  //       console.log(res.data.captcha);
-  //       if (isMounted) setCaptcha(res.data.captcha);
-  //     })
-  //     .catch((err) => console.log(err));
-  // };
-
-  useEffect(() => {
-    let isMounted = true;
-    //getUrlCaptcha(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Stack space={4} mt={10} w="100%" alignItems="center">
@@ -182,48 +152,6 @@ export const Registration = () => {
         }
         placeholder="Password confirm"
       />
-      {/* <Stack direction={"row"}>
-        <Image
-          source={{
-            uri: captcha,
-          }}
-          style={{
-            resizeMode: "cover",
-            height: 55,
-            width: 200,
-          }}
-        />
-        <IconButton
-          icon={<Icon as={MaterialIcons} name="rotate-right" />}
-          borderRadius="full"
-          onPress={() => getUrlCaptcha(true)}
-          _pressed={{
-            bg: theme.colors.blue[300],
-          }}
-          _icon={{
-            color: theme.colors.blue[500],
-            size: "xl",
-          }}
-        />
-      </Stack>
-      <Input
-        onChangeText={(text: string) => setCaptchaText(text)}
-        value={captchaText}
-        w={{
-          base: "80%",
-          md: "25%",
-        }}
-        variant="rounded"
-        InputLeftElement={
-          <Icon
-            as={<MaterialIcons name="edit" />}
-            size={5}
-            ml="2"
-            color="muted.400"
-          />
-        }
-        placeholder="Captcha"
-      /> */}
       {isError ? (
         <ErrorAlert
           errorMessage={textError}
@@ -244,10 +172,34 @@ export const Registration = () => {
         leftIcon={<Icon as={MaterialIcons} name="account-circle" size="sm" />}
         shadow={2}
         bgColor={theme.colors.blue[500]}
-        onPress={() => registerUser()}
+        onPress={() => {
+          store.dispatch(
+            registerUser(email, name, password, () => setIsOpen(true))
+          );
+        }}
       >
         Register
       </Button>
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <Modal.Content maxWidth="400px" p={2}>
+          <Modal.CloseButton />
+          <Heading size={"md"} pb={2}>
+            Success
+          </Heading>
+          <Heading size={"sm"} pb={2}>
+            Confirm your email, the message has been sent to your email:
+          </Heading>
+          <Heading size={"sm"} pb={2}>{email}</Heading>
+          <Button
+            width={"full"}
+            onPress={() => {
+              Linking.openURL("mailto:support@example.com");
+            }}
+          >
+            Open mail app
+          </Button>
+        </Modal.Content>
+      </Modal>
     </Stack>
   );
 };
